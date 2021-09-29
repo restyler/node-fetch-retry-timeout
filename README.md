@@ -21,6 +21,8 @@ Differences compared to https://www.npmjs.com/package/node-fetch-retry :
 1. YANFRT has timeouts handling based on AbortController
 1. Can retry based on http response statuses
 
+## Installation
+`npm i node-fetch-retry-timeout`
 
 ## Example
 ```js
