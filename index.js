@@ -38,10 +38,7 @@ module.exports = async (url, opts) => {
             
             return response
         } catch(e) {
-            console.error(e)
-            //if (e instanceof fetch.AbortError) {
-            //    console.log('request was aborted');
-            //}
+            if (!opts.silent) console.error(e)
 
             if (opts.callback) {
                 opts.callback(retry)
