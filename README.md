@@ -1,6 +1,6 @@
 # node-fetch-retry-timeout
 
-Minimalistic drop-in replacement for node-fetch. Created because other alternatives were not good for me.
+Minimalistic drop-in replacement for node-fetch. Created because other alternatives were not good for me (and believe me: I really tried hard to avoid creating yet another node-fetch replacement).
 
 Major differences from https://www.npmjs.com/package/@adobe/node-fetch-retry:
 1. Retries are configured by amount of attempts and not on total duration of request (more convenient when request latency is fluctuating between 1 and 20 seconds)
@@ -13,4 +13,5 @@ Differences compared to https://www.npmjs.com/package/fetch-retry :
 2. More flexible retry on http response codes (not an array of codes but a callback so you can do `(response.status >= 400 && response.status <= 600) || response.status == 302`
 
 Differences compared to https://www.npmjs.com/package/node-fetch-retry :
-1. Can retry based on on http response statuses
+1. Timeouts based on AbortController
+1. Can retry based on http response statuses
