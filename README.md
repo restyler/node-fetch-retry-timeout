@@ -31,7 +31,7 @@ Differences compared to https://www.npmjs.com/package/node-fetch-retry :
     method: 'GET', 
     retry: 2, 
     timeout: 5000, 
-    retryOnHttpResponse: (r) => { r.status >= 500 } // this is the default implementation of retryOnHttpResponse, pass false to disable
+    retryOnHttpResponse: r => r.status >= 500 // this is the default implementation of retryOnHttpResponse, pass false to disable
   })
 ```
 
