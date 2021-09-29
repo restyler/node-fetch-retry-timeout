@@ -213,7 +213,12 @@ describe('test fetch retry', () => {
         nock(FAKE_BASE_URL)
             .get(FAKE_PATH)
             .reply(200, { ok: true });
-        const response = await fetch(`${FAKE_BASE_URL}${FAKE_PATH}`, { method: 'GET', retry: 2, timeout: 2000, retryOnHttpResponse: (r) => { r.status >= 500 } });
+        const response = await fetch(`${FAKE_BASE_URL}${FAKE_PATH}`, { 
+            method: 'GET', 
+            retry: 2, 
+            timeout: 2000, 
+            retryOnHttpResponse: r => r.status >= 500
+        });
         assert(nock.isDone());
         assert.strictEqual(response.statusText, 'OK');
         assert.strictEqual(response.status, 200);

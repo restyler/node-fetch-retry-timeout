@@ -10,10 +10,10 @@ module.exports = async (url, opts) => {
 
 
     if (opts.retryOnHttpResponse == undefined) {
-        opts.retryOnHttpResponse = (response) => { return response.status >= 500 }
+        opts.retryOnHttpResponse = response => response.status >= 500
     } else {
         if (opts.retryOnHttpResponse === false) {
-            opts.retryOnHttpResponse = (response) => { return false }
+            opts.retryOnHttpResponse = response => false
         } else if (typeof opts.retryOnHttpResponse != 'function') {
             throw new Error(`'retryOnHttpResponse' must be a function: ${opts.retryOnHttpResponse}`);
         }
