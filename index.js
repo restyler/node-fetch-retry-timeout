@@ -25,12 +25,11 @@ module.exports = async (url, opts) => {
 
         let timeout = setTimeout(() => {
             controller.abort();
-        }, opts.timeout || 8000);
+        }, opts.timeout || 20000);
         opts.signal = controller.signal
         if (!opts.redirect) opts.redirect = 'manual'
         
         try {
-            console.log('$$$$REQ', retry)
             let response = await fetch(url, opts)
             
             if (opts.retryOnHttpResponse(response)) {
@@ -49,7 +48,6 @@ module.exports = async (url, opts) => {
             }        
             retry--
             if (retry == 0) {
-                console.log('##Ff3#F#')
                 throw e
             }
 
