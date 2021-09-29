@@ -1,4 +1,4 @@
-# node-fetch-retry-timeout
+# Yet Another node-fetch-retry-timeout
 
 Minimalistic drop-in replacement for node-fetch. Created because other alternatives were not good for me (and believe me: I really tried hard to avoid creating yet another node-fetch replacement).
 
