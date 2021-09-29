@@ -1,12 +1,16 @@
 {
   "name": "node-fetch-retry-timeout",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "node-fetch with retries and timeout. Done right.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test"
   },
   "author": "Anton Sidashin <etebipha@hi2.in>  (https://pixeljets.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/restyler/node-fetch-retry-timeout"
+  },
   "keywords": [
     "node-fetch",
     "request",
