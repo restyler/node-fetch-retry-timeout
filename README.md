@@ -1,6 +1,10 @@
 # Yet Another node-fetch-retry-timeout (YANFRT)
 
-Minimalistic drop-in replacement for node-fetch. Created because other alternatives were not good for me (and believe me: I really tried hard to avoid creating yet another node-fetch replacement).
+Minimalistic drop-in replacement for node-fetch. Created because other alternatives were not good for me (and believe me: I really tried hard to avoid creating yet another node-fetch extra feature package).
+
+## Notable differences from default node-fetch behaviour:
+1. Default redirect strategy is 'manual' so we get 30x redirects as responses
+2. Response timeout is 20s
 
 ## Why, god, why?
 Major differences from https://www.npmjs.com/package/@adobe/node-fetch-retry:
