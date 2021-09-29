@@ -1,12 +1,18 @@
 {
   "name": "node-fetch-retry-timeout",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "node-fetch with retries and timeout. Done right.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test"
   },
-  "author": "",
+  "author": "Anton Sidashin <etebipha@hi2.in>  (https://pixeljets.com)",
+  "keywords": [
+    "node-fetch",
+    "request",
+    "retry",
+    "timeout"
+  ],
   "license": "ISC",
   "dependencies": {
     "abort-controller": "^3.0.0",
