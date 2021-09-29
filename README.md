@@ -5,6 +5,7 @@ Minimalistic drop-in replacement for node-fetch. Created because other alternati
 ## Notable differences from default node-fetch behaviour:
 1. Default redirect strategy is 'manual' so we get 30x redirects as responses
 2. Response timeout is 20s
+3. Will consider each 50x response as a bad one and will retry (pass `retryOnHttpResponse: false` to disable)
 
 ## Why, god, why?
 Major differences from https://www.npmjs.com/package/@adobe/node-fetch-retry:
@@ -23,7 +24,12 @@ Differences compared to https://www.npmjs.com/package/node-fetch-retry :
 
 ## Example
 ```js
-  const response = await fetch(`${FAKE_BASE_URL}${FAKE_PATH}`, { method: 'GET', retry: 2, timeout: 2000, retryOnHttpResponse: (r) => { r.status >= 500 } })
+  const response = await fetch('https://google.com', { 
+    method: 'GET', 
+    retry: 2, 
+    timeout: 5000, 
+    retryOnHttpResponse: (r) => { r.status >= 500 } 
+  })
 ```
 
 ## Running tests
