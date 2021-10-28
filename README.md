@@ -29,8 +29,9 @@ Differences compared to https://www.npmjs.com/package/node-fetch-retry :
   const fetch = require('node-fetch-retry-timeout')
   let response = await fetch('https://google.com', {
     method: 'GET', 
-    retry: 2, 
-    timeout: 5000, 
+    retry: 2, // number attempts to retry
+    pause: 500, // pause between requests (ms)
+    timeout: 5000,  // timeout PER 1 REQUEST (ms)
     retryOnHttpResponse: r => r.status >= 500 // this is the default implementation of retryOnHttpResponse, pass false to disable
   })
 ```
