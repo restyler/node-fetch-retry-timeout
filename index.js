@@ -2,11 +2,16 @@ const fetch = require('node-fetch');
 const AbortController = require('abort-controller');
 
 
-
+class HTTPResponseError extends Error {
+	constructor(response, ...args) {
+		super(`HTTP Error Response: ${response.status} ${response.statusText}`, ...args);
+		this.response = response;
+	}
+}
 
 module.exports = async (url, opts) => {
-    let retry = opts && opts.retry !== undefined ? opts.retry : 2
-    retry++ // add first request to attemps
+    let retriesLeft = opts && opts.retry !== undefined ? opts.retry : 2
+    let attemptsNum = ++retriesLeft // add first request to attemps
 
 
     if (opts.retryOnHttpResponse == undefined) {
@@ -20,7 +25,7 @@ module.exports = async (url, opts) => {
     }
     
 
-    while (retry > 0) {
+    while (retriesLeft > 0) {
         let controller = new AbortController();
 
         let timeout = setTimeout(() => {
@@ -29,24 +34,34 @@ module.exports = async (url, opts) => {
         opts.signal = controller.signal
         if (!opts.redirect) opts.redirect = 'manual'
         
+        let response = null
         try {
-            let response = await fetch(url, opts)
+            response = await fetch(url, opts)
             
             if (opts.retryOnHttpResponse(response)) {
-                throw new Error('Response code: ' + response.status);
+                throw new HTTPResponseError(response);
             }
             
             return response
         } catch(e) {
             if (!opts.silent) console.error(e)
+            
+            retriesLeft--
+            
 
             if (opts.callback) {
-                opts.callback(retry)
-            }        
-            retry--
-            if (retry == 0) {
+               
+               let newOpts = opts.callback(attemptsNum-retriesLeft, e)
+               if (newOpts) {
+                   //console.log('opts override via callback', newOpts)
+                   opts = { ...opts, ...newOpts }
+               }
+            }
+            
+            if (retriesLeft == 0) {
                 throw e
             }
+            
 
             if (opts.pause) {
                 if (!opts.silent) console.log("pausing..");

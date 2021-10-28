@@ -22,8 +22,11 @@ const fetch = require('../index');
 const http = require('http');
 const getPort = require('get-port');
 
+const ProxyAgent = require('proxy-agent');
+
 const FAKE_BASE_URL = 'https://fakeurl.com';
 const FAKE_PATH = '/image/test.png';
+
 
 describe('test fetch retry', () => {
     afterEach(() => {
@@ -284,5 +287,108 @@ describe('test fetch retry', () => {
             server.close();
         }
     }).timeout(15000);
+
+
+    it('can change header on retry', async () => {
+        nock(FAKE_BASE_URL)
+            .get(FAKE_PATH)
+            .matchHeader('Random-Header', 'first-try')
+            .replyWithError({ // this throws FetchError
+                message: 'something awful happened',
+                code: '503',
+            });
+        nock(FAKE_BASE_URL)
+            .get(FAKE_PATH)
+            .matchHeader('Random-Header', 'second-try')
+            .reply(503, { // this throws HTTPResponseError
+                message: 'something awful happened'
+            });
+        nock(FAKE_BASE_URL)
+            .get(FAKE_PATH)
+            .matchHeader('Random-Header', 'third-try')
+            .reply(200, { ok: true });
+
+
+        let firstStatus, secondStatus
+        let response = await fetch(`${FAKE_BASE_URL}${FAKE_PATH}`, { 
+            method: 'GET', 
+            retry: 2, 
+            headers: { 'Random-header': 'first-try' },
+            callback: (retryNum, error) => {
+                console.log('CALLBACK RUN!', retryNum, error.response ? error.response.status : '-')
+                console.log('retryNum23233232:', retryNum, error.response)
+                if (retryNum == 1) {
+                    // for FetchError, there is no response property.
+                    // but it exists for HTTPResponseError of node-fetch-retry-timeout
+                    console.log('error.name #1:', error.name)
+                    firstStatus = error.response ? error.response.status : error.errno
+
+                    return { headers: { 'Random-header': 'second-try'} }
+                }
+
+                if (retryNum == 2) {
+                    // for FetchError, there is no response property.
+                    // but it exists for HTTPResponseError of node-fetch-retry-timeout
+                    console.log('error.name #2:', error.name)
+                    secondStatus = error.response ? error.response.status : error.errno
+                    return { headers: { 'Random-header': 'third-try'} }
+                }
+                
+                
+            }
+        });
+
+        assert(nock.isDone());
+        assert.equal(firstStatus, 503);
+        assert.equal(secondStatus, 503);
+        assert.strictEqual(response.status, 200);
+
+    });
+
+
+    it('can change agent on retry', async () => {
+        const hostname = "127.0.0.1";
+        const port = await getPort({ port: 8000 });
+
+        const waiting = 100; // time to wait for requests > 0
+        //let requestCounter = 0;
+        const server = http.createServer((req, res) => {
+            setTimeout(function () {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'text/plain');
+                res.end('Worked! \n');
+            }, waiting);
+ 
+        });
+
+        server.listen(port, hostname, () => {
+            console.log(`Dummy HTTP Test server running at http://${hostname}:${port}/`);
+        });
+        
+        const proxyPort = await getPort({ port: 8000 });
+        let brokenProxyAgent = new ProxyAgent(`https://127.0.0.1:${proxyPort}`)
+
+        //try {
+            const retryCb = (retryNum, e) => {
+                // only one retry should be done
+                assert.strictEqual(retryNum, 1)
+                return {
+                    agent: http.globalAgent
+                }
+            }
+            let response = await fetch(`http://${hostname}:${port}`, { 
+                method: 'GET', 
+                retry: 2, 
+                timeout: 1000, 
+                agent: brokenProxyAgent,
+                callback: retryCb
+            });
+            assert.strictEqual(response.status, 200)
+        //} catch (e) {
+        //    console.error(e)
+        //} finally {
+            server.close();
+        //}
+    });
 
 });

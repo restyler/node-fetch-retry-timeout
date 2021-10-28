@@ -25,6 +25,7 @@
   "devDependencies": {
     "get-port": "^5.1.1",
     "mocha": "^9.1.2",
-    "nock": "^13.1.3"
+    "nock": "^13.1.3",
+    "proxy-agent": "^5.0.0"
   }
 }
