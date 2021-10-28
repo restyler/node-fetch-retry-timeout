@@ -1,6 +1,6 @@
 {
   "name": "node-fetch-retry-timeout",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "node-fetch with retries and timeout. Done right.",
   "main": "index.js",
   "scripts": {
