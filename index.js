@@ -23,6 +23,10 @@ module.exports = async (url, opts) => {
             throw new Error(`'retryOnHttpResponse' must be a function: ${opts.retryOnHttpResponse}`);
         }
     }
+
+    if (opts.beforeRetry != undefined && typeof opts.beforeRetry != 'function') {
+        throw new Error(`'beforeRetry' must be a function: ${opts.beforeRetry}`);
+    }
     
 
     while (retriesLeft > 0) {
@@ -49,11 +53,11 @@ module.exports = async (url, opts) => {
             retriesLeft--
             
 
-            if (opts.callback) {
+            if (opts.beforeRetry) {
                
-               let newOpts = opts.callback(attemptsNum-retriesLeft, e)
+               let newOpts = opts.beforeRetry(attemptsNum-retriesLeft, e)
                if (newOpts) {
-                   //console.log('opts override via callback', newOpts)
+                   //console.log('opts override via beforeRetry', newOpts)
                    opts = { ...opts, ...newOpts }
                }
             }

@@ -314,9 +314,8 @@ describe('test fetch retry', () => {
             method: 'GET', 
             retry: 2, 
             headers: { 'Random-header': 'first-try' },
-            callback: (retryNum, error) => {
-                console.log('CALLBACK RUN!', retryNum, error.response ? error.response.status : '-')
-                console.log('retryNum23233232:', retryNum, error.response)
+            beforeRetry: (retryNum, error) => {
+                console.log('BEFORE RETRY CALLBACK RUN!', retryNum, error.response ? error.response.status : '-')
                 if (retryNum == 1) {
                     // for FetchError, there is no response property.
                     // but it exists for HTTPResponseError of node-fetch-retry-timeout
@@ -368,27 +367,25 @@ describe('test fetch retry', () => {
         const proxyPort = await getPort({ port: 8000 });
         let brokenProxyAgent = new ProxyAgent(`https://127.0.0.1:${proxyPort}`)
 
-        //try {
-            const retryCb = (retryNum, e) => {
-                // only one retry should be done
-                assert.strictEqual(retryNum, 1)
-                return {
-                    agent: http.globalAgent
-                }
+
+        const retryCb = (retryNum, e) => {
+            // only one retry should be done
+            assert.strictEqual(retryNum, 1)
+            return {
+                agent: http.globalAgent
             }
-            let response = await fetch(`http://${hostname}:${port}`, { 
-                method: 'GET', 
-                retry: 2, 
-                timeout: 1000, 
-                agent: brokenProxyAgent,
-                callback: retryCb
-            });
-            assert.strictEqual(response.status, 200)
-        //} catch (e) {
-        //    console.error(e)
-        //} finally {
-            server.close();
-        //}
+        }
+        let response = await fetch(`http://${hostname}:${port}`, { 
+            method: 'GET', 
+            retry: 2, 
+            timeout: 1000, 
+            agent: brokenProxyAgent,
+            beforeRetry: retryCb
+        });
+        assert.strictEqual(response.status, 200)
+
+        server.close();
+
     });
 
 });
