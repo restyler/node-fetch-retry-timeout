@@ -7,7 +7,7 @@ Minimalistic drop-in replacement for node-fetch. Created because other alternati
 2. Response timeout is 20s
 3. Will consider each 50x response as a bad one and will retry (pass `retryOnHttpResponse: false` to disable)
 
-## Why, god, why?
+## Why, jeez, why?
 Major differences from https://www.npmjs.com/package/@adobe/node-fetch-retry:
 1. In YANFRT, Retries are configured by amount of attempts and not by total allowed duration of request (more convenient when request latency is fluctuating between 1 and 20 seconds like in most of my use cases)
 2. One simple retry strategy: just amount of attempts and delay between requests
